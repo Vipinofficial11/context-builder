@@ -1,0 +1,207 @@
+/* Styles for injected button and toast */
+
+.ctx-injected-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: background-color 0.2s, transform 0.1s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.ctx-injected-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.ctx-injected-btn:active {
+  transform: scale(0.95);
+}
+
+/* Toast Notification */
+.ctx-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #1f2937;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 100000;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  animation: ctx-fade-in 0.3s ease-out;
+}
+
+@keyframes ctx-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ctx-toast.fade-out {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Sleek Floating Widget */
+.ctx-floating-widget {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2147483647;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  font-family: system-ui, -apple-system, sans-serif;
+  width: 280px;
+  /* Increased width for floating box feel */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.3s ease, background 0.3s ease;
+  overflow: hidden;
+  /* Clip waves */
+  user-select: none;
+  /* Prevent text selection while dragging */
+}
+
+.ctx-floating-widget:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Content Wrapper to stay above waves */
+.ctx-widget-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ctx-widget-header {
+  display: flex;
+  flex-direction: column;
+  cursor: move;
+  /* Indicate draggable */
+}
+
+.ctx-widget-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ctx-active-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctx-widget-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ctx-widget-btn {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ctx-widget-btn:active {
+  transform: scale(0.95);
+}
+
+#ctx-copy-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+#ctx-copy-btn:hover {
+  background-color: #e5e7eb;
+}
+
+#ctx-paste-action-btn {
+  background-color: #2563eb;
+  color: white;
+}
+
+#ctx-paste-action-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Water Waves Animation */
+.ctx-waves-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0.15;
+  /* Subtle waves */
+  pointer-events: none;
+  /* Don't block clicks */
+}
+
+.ctx-wave {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: 65%;
+  /* Start low */
+  left: -50%;
+  background: linear-gradient(to bottom, #0ea5e9, #38bdf8);
+  border-radius: 43%;
+  animation: ctx-wave-spin 12s linear infinite;
+}
+
+.ctx-wave-2 {
+  top: 70%;
+  background: linear-gradient(to bottom, #38bdf8, #7dd3fc);
+  border-radius: 40%;
+  animation: ctx-wave-spin 18s linear infinite reverse;
+  opacity: 0.7;
+}
+
+@keyframes ctx-wave-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

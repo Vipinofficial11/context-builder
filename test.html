@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ContextBuilder Unit Tests</title>
+  <script src="libs/readability.js"></script>
+  <script src="libs/turndown.js"></script>
+</head>
+<body>
+  <h1>ContextBuilder Unit Tests</h1>
+  
+  <div id="sample-content">
+    <article>
+      <h1>Sample Article Title</h1>
+      <p>This is a paragraph with some <strong>bold text</strong> and a <a href="https://example.com">link</a>.</p>
+      <p>Another paragraph to ensure we capture multiple paragraphs.</p>
+    </article>
+  </div>
+
+  <div id="results" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+    Running tests...
+  </div>
+
+  <script>
+    function runTests() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      try {
+        // Test Readability
+        const docClone = document.cloneNode(true);
+        const reader = new Readability(docClone);
+        const article = reader.parse();
+
+        if (!article || !article.content) {
+          throw new Error('Readability failed to parse.');
+        }
+
+        resultsDiv.innerHTML += '<p style="color: green;">✅ Readability parsed successfully.</p>';
+        resultsDiv.innerHTML += '<p><strong>Title:</strong> ' + article.title + '</p>';
+
+        // Test Turndown
+        const turndownService = new TurndownService({
+          headingStyle: 'atx',
+          codeBlockStyle: 'fenced'
+        });
+        
+        const markdown = turndownService.turndown(article.content);
+
+        if (!markdown || !markdown.includes('**bold text**')) {
+          throw new Error('Turndown failed to convert correctly.');
+        }
+
+        resultsDiv.innerHTML += '<p style="color: green;">✅ Turndown converted successfully.</p>';
+        resultsDiv.innerHTML += '<pre style="background: #f0f0f0; padding: 10px;">' + markdown + '</pre>';
+
+        resultsDiv.innerHTML += '<h2 style="color: green;">All Tests Passed!</h2>';
+      } catch (error) {
+        resultsDiv.innerHTML += '<p style="color: red;">❌ Test failed: ' + error.message + '</p>';
+        console.error(error);
+      }
+    }
+
+    // Run tests on load
+    window.onload = runTests;
+  </script>
+</body>
+</html>

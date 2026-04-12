@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContextBuilder Options</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+  <div class="max-w-2xl mx-auto p-8">
+    <!-- Header -->
+    <div class="flex items-center space-x-3 mb-8">
+      <img src="icons/icon48.png" alt="Logo" class="w-10 h-10">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">ContextBuilder Settings</h1>
+        <p class="text-sm text-slate-500">Configure your context storage and integrations.</p>
+      </div>
+    </div>
+
+    <!-- Google Docs Integration -->
+    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-6">
+      <h2 class="text-lg font-semibold text-slate-900 mb-2">Google Docs Sync</h2>
+      <p class="text-sm text-slate-600 mb-4">Automatically sync your contexts to a Google Doc or Folder.</p>
+
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-sm font-medium text-slate-700">Status:</span>
+          <span id="authStatus" class="text-sm text-red-500 font-medium ml-1">Not Connected</span>
+        </div>
+        <button id="authBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium shadow-sm transition-colors">
+          Connect Google Account
+        </button>
+      </div>
+
+      <!-- Advanced Settings -->
+      <div class="mt-6 border-t border-slate-100 pt-4">
+        <label class="flex items-center space-x-2 cursor-pointer">
+          <input id="useTabsFallback" type="checkbox" class="rounded text-blue-600 focus:ring-blue-500">
+          <span class="text-sm text-slate-700">Use Folder Fallback (individual docs instead of tabs)</span>
+        </label>
+        <p class="text-xs text-slate-400 mt-1 ml-6">Enable this if your account doesn't support programmatic creation of Document Tabs yet.</p>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+      <h2 class="text-lg font-semibold text-slate-900 mb-2">How to use</h2>
+      <ul class="list-disc list-inside text-sm text-slate-600 space-y-2">
+        <li>Highlight text on any page and right-click -> "Add to Active Context".</li>
+        <li>Use <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded text-xs font-mono font-bold">Ctrl+Shift+X</kbd> to add selected text.</li>
+        <li>Click the "Scrape Page" button in the popup to convert the whole page to Markdown.</li>
+        <li>Visit an AI chat (ChatGPT, Claude, Gemini) to use the injected "Paste Context" button.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
