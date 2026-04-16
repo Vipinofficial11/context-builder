@@ -31,6 +31,11 @@
   "options_page": "options.html",
   "content_scripts": [
     {
+      "matches": ["<all_urls>"],
+      "js": ["capture_toolbar.js"],
+      "all_frames": false
+    },
+    {
       "matches": [
         "https://chat.openai.com/*",
         "https://chatgpt.com/*",
@@ -41,6 +46,7 @@
         "https://*.bard.google.com/*"
       ],
       "js": [
+        "compressor.js",
         "content.js"
       ],
       "css": [

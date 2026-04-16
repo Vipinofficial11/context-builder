@@ -66,38 +66,104 @@ async function addTextToContext(text, tab) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: (name) => {
-        const toast = document.createElement('div');
-        toast.textContent = `Added to [${name}]`;
+        const host = document.createElement('div');
+        const shadow = host.attachShadow({ mode: 'open' });
 
-        Object.assign(toast.style, {
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          backgroundColor: '#1f2937',
-          color: 'white',
-          padding: '10px 16px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-          zIndex: '100000',
-          fontSize: '14px',
-          fontWeight: '500',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          transition: 'opacity 0.3s, transform 0.3s',
-          opacity: '0',
-          transform: 'translateY(-10px)'
-        });
+        const style = document.createElement('style');
+        style.textContent = `
+          .ctx-toast-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            z-index: 2147483647;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+            opacity: 0;
+            transform: translateY(20px);
+          }
 
-        document.body.appendChild(toast);
-        toast.offsetHeight; // Trigger reflow
+          .ctx-waves-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none;
+          }
+          .ctx-wave {
+            position: absolute; width: 200%; height: 200%;
+            top: 70%; left: -50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(45,212,191,0.15), rgba(20,184,166,0.2));
+            border-radius: 43%;
+            animation: ctx-wave-spin 35s linear infinite;
+          }
+          .ctx-wave-2 {
+            top: 75%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(52,211,153,0.1), rgba(16,185,129,0.15));
+            border-radius: 40%;
+            animation: ctx-wave-spin 45s linear infinite reverse;
+          }
+          @keyframes ctx-wave-spin { 100% { transform: rotate(360deg); } }
 
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
+          .ctx-toast-content {
+            display: flex; flex-direction: column; position: relative; z-index: 2;
+          }
+          .ctx-toast-title {
+            font-size: 9px; font-weight: 700; color: #b45309;
+            text-transform: uppercase; letter-spacing: 0.05em;
+          }
+          .ctx-toast-name {
+            font-size: 14px; font-weight: 700; color: #0c4a6e;
+          }
+          .ctx-toast-badge {
+            background: #0284c7; color: white;
+            font-size: 10px; font-weight: 700;
+            padding: 4px 10px; border-radius: 12px;
+            text-transform: uppercase; display: flex; align-items: center; gap: 4px;
+            position: relative; z-index: 2;
+            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+          }
+        `;
+
+        const widget = document.createElement('div');
+        widget.className = 'ctx-toast-widget';
+
+        const waves = document.createElement('div');
+        waves.className = 'ctx-waves-bg';
+        waves.innerHTML = '<div class="ctx-wave"></div><div class="ctx-wave ctx-wave-2"></div>';
+        widget.appendChild(waves);
+
+        const content = document.createElement('div');
+        content.className = 'ctx-toast-content';
+        content.innerHTML = `
+          <span class="ctx-toast-title">ContextBuilder</span>
+          <span class="ctx-toast-name">${name}</span>
+        `;
+        widget.appendChild(content);
+
+        const badge = document.createElement('div');
+        badge.className = 'ctx-toast-badge';
+        badge.innerHTML = '<span>✓</span> Added';
+        widget.appendChild(badge);
+
+        shadow.appendChild(style);
+        shadow.appendChild(widget);
+        document.documentElement.appendChild(host);
+
+        widget.offsetHeight;
+        widget.style.opacity = '1';
+        widget.style.transform = 'translateY(0)';
 
         setTimeout(() => {
-          toast.style.opacity = '0';
-          toast.style.transform = 'translateY(-10px)';
-          setTimeout(() => toast.remove(), 300);
-        }, 2000);
+          widget.style.opacity = '0';
+          widget.style.transform = 'translateY(20px)';
+          setTimeout(() => host.remove(), 400);
+        }, 2500);
       },
       args: [contextName]
     });
@@ -105,6 +171,11 @@ async function addTextToContext(text, tab) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'capture-selection') {
+    addTextToContext(message.text, sender.tab);
+    return;
+  }
+
   if (message.action === 'sync-docs') {
     handleSyncDocs(message.contextId).then(response => {
       sendResponse(response);

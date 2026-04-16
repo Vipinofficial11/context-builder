@@ -172,24 +172,87 @@ if (window.hasContextBuilderInjected) {
         position: absolute;
         width: 200%;
         height: 200%;
-        top: 55%;
+        top: 70%;
         left: -50%;
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(56, 189, 248, 0.4) 50%, rgba(2, 132, 199, 0.6) 100%);
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(45, 212, 191, 0.15) 50%, rgba(20, 184, 166, 0.2) 100%);
         border-radius: 43%;
-        animation: ctx-wave-spin 15s linear infinite;
+        animation: ctx-wave-spin 35s linear infinite;
       }
 
       .ctx-wave-2 {
-        top: 60%;
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(125, 211, 252, 0.3) 50%, rgba(3, 105, 161, 0.4) 100%);
+        top: 75%;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(52, 211, 153, 0.1) 50%, rgba(16, 185, 129, 0.15) 100%);
         border-radius: 40%;
-        animation: ctx-wave-spin 20s linear infinite reverse;
-        opacity: 0.8;
+        animation: ctx-wave-spin 45s linear infinite reverse;
+        opacity: 0.6;
       }
 
       @keyframes ctx-wave-spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+      }
+
+      .ctx-toggle-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #0369a1;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 3px 8px;
+        border-radius: 20px;
+        border: 1px solid #0284c7;
+        box-shadow: 0 2px 4px rgba(2, 132, 199, 0.1);
+        margin-top: 4px;
+        width: fit-content;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
+
+      .ctx-switch {
+        position: relative;
+        display: inline-block;
+        width: 28px;
+        height: 16px;
+      }
+
+      .ctx-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .ctx-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 16px;
+      }
+
+      .ctx-slider:before {
+        position: absolute;
+        content: "";
+        height: 12px;
+        width: 12px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .ctx-slider {
+        background-color: #0284c7;
+      }
+
+      input:checked + .ctx-slider:before {
+        transform: translateX(12px);
       }
     `;
     shadow.appendChild(style);
@@ -235,6 +298,34 @@ if (window.hasContextBuilderInjected) {
     // Actions Section
     const actions = document.createElement('div');
     actions.className = 'ctx-widget-actions';
+    actions.style.display = 'flex';
+    actions.style.alignItems = 'center';
+    actions.style.gap = '8px';
+
+    // Compression Toggle
+    const toggleWrapper = document.createElement('div');
+    toggleWrapper.className = 'ctx-toggle-wrapper';
+
+    const toggleLabel = document.createElement('span');
+    toggleLabel.textContent = 'Compress';
+
+    const switchLabel = document.createElement('label');
+    switchLabel.className = 'ctx-switch';
+
+    const toggleInput = document.createElement('input');
+    toggleInput.type = 'checkbox';
+    toggleInput.id = 'ctx-compress-toggle';
+
+    const sliderSpan = document.createElement('span');
+    sliderSpan.className = 'ctx-slider';
+
+    switchLabel.appendChild(toggleInput);
+    switchLabel.appendChild(sliderSpan);
+
+    toggleWrapper.appendChild(toggleLabel);
+    toggleWrapper.appendChild(switchLabel);
+
+    infoSection.appendChild(toggleWrapper);
 
     const pasteActionBtn = document.createElement('button');
     pasteActionBtn.id = 'ctx-paste-action-btn';
@@ -250,6 +341,16 @@ if (window.hasContextBuilderInjected) {
     // Append Host to documentElement
     document.documentElement.appendChild(floatingWidgetHost);
 
+    // Load toggle state
+    chrome.storage.local.get(['compressEnabled'], (data) => {
+      toggleInput.checked = data.compressEnabled || false;
+    });
+
+    // Save toggle state
+    toggleInput.addEventListener('change', () => {
+      chrome.storage.local.set({ compressEnabled: toggleInput.checked });
+    });
+
     // Setup listeners
     pasteActionBtn.addEventListener('click', async () => {
       const inputEl = findChatInput();
@@ -258,7 +359,11 @@ if (window.hasContextBuilderInjected) {
       const contexts = data.contexts;
 
       if (!activeId || !contexts || !contexts[activeId]) return;
-      const content = contexts[activeId].content;
+      let content = contexts[activeId].content;
+
+      if (toggleInput.checked && window.compressText) {
+        content = window.compressText(content);
+      }
 
       if (!inputEl) {
         alert('Input not found.');
